@@ -1,0 +1,33 @@
+# A simple Python script that uses the ccxt library to fetch and display crypto prices from different exchanges
+import ccxt
+import pandas as pd
+
+# Create a list of exchanges to query
+exchanges = ["binance", "coinbasepro", "kraken"]
+
+# Create an empty dataframe to store the results
+df = pd.DataFrame()
+
+# Loop through each exchange and fetch the latest prices for BTC/USD and ETH/USD pairs
+for exchange in exchanges:
+    # Create an instance of the exchange class
+    ex = getattr(ccxt, exchange)()
+    # Load the markets data
+    ex.load_markets()
+    # Fetch the ticker data for the pairs
+    btc_usd = ex.fetch_ticker("BTC/USD")
+    eth_usd = ex.fetch_ticker("ETH/USD")
+    # Extract the last price and the 24h volume from the ticker data
+    btc_price = btc_usd["last"]
+    btc_volume = btc_usd["quoteVolume"]
+    eth_price = eth_usd["last"]
+    eth_volume = eth_usd["quoteVolume"]
+    # Append the data to the dataframe
+    df = df.append({"exchange": exchange,
+                    "btc_price": btc_price,
+                    "btc_volume": btc_volume,
+                    "eth_price": eth_price,
+                    "eth_volume": eth_volume}, ignore_index=True)
+
+# Display the dataframe
+print(df)
